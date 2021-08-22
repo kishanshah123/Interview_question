@@ -116,3 +116,147 @@ terraform destroy --target=aws_instance.instance_name: if we want to create/dest
                                                        we use target option.
 
 ------------------------------------------------------------------------------------------------------------------------------------
+JAVA Home Path:
+
+find /usr/ -name *openjdk
+
+JAVA_HOME=/usr/lib/jvm/java-1.8.0
+export JAVA_HOME=/usr/lib/jvm/java-1.8.0
+export PATH=$JAVA_HOME/bin:$PATH
+source /etc/profile
+echo $JAVA_HOME
+
+-------------------------------------------------------------------------------------------------------------------------------
+
+Git Branches:
+
+git branch -- to list all the branches
+git branch name-- to create new branch
+
+git checkout branchname--to switch the branch
+
+git branch -d branchname--to delete branch
+
+-------------------------------------------------------------------------------------------------------------------
+
+Git Stash:
+
+let suppose we are working on some file & due to some urgent work we have to work on another file.
+then then we have to stop working on first file. then if we want to keep this file safe so we use git stash command.
+
+git stash
+
+git stash list
+
+git stash apply stashno
+
+git stash clear
+
+-----------------------------------------------------------------------------------------------------------------------------
+
+git log-->all commit details
+
+git shaow commitid --> detailed info 
+
+if we want to remove git configuration then we have to remove .git filr
+
+rm -rf .git
+
+git remove -v -->to check the remote repo
+
+git pull -a --> it pull all the changes form remote repo
+
+git log-->to check all the commit
+
+git reset--> it is used to bring back the file from staging area to working area
+
+git reset commitid-->if want to remove latest commit 
+
+-----------------------------------------------------------------------------------------------------------------------------------------
+
+#What is the best way to write docker file.
+use multistage build in dockerfile
+
+
+diff b/w agr env in docker file.
+
+ARG: used to define the variable, is only available at the time of image building. we can also overwrite the arg value at  the run time
+ENV: is for future running container
+
+-------------------------------------------------------------------------------------------------------------------------------------------
+
+docker save & docker load command: used to create the archive the of the image
+
+docker save -o backup.tar imagename-->archive the image
+docker load -i backup.tar-->create image from archive
+
+
+Docker export & docker import command:
+-----------------------------------------------------------------------------------------------------------------
+
+#diff b/w ebs & efs
+-----------------------------------------------------------------------
+#diff b/w arg & env
+arg-->used in run time
+env-->used for future container
+----------------------------------------------------------------------
+
+#how to write efficient docker file:
+use multistage build container
+-----------------------------------------------------------------------
+
+diff b/w security group & NACL:
+security group-->statefull
+NACL-->stateless
+
+------------------------------------------------------------------------
+
+RDS:
+
+Fully managed
+Multi AZ
+Read replicas
+Backup & restore to specific timestamp
+scalling automatically u have to set max storage threshold
+
+RDS backups:
+automatically enabled
+ability to restore any point in time
+7 days retension (incrase to 35 days)
+
+
+DB Snapshort:
+mannually triggered by user
+retention as u want
+
+RDS read replicas:
+we can only read 
+we can create 5 replicas
+replicas is async so read eventually consistent
+
+RDS multi AZ:
+sync replicas
+one DNS name
+
+----------------------------------------------------------------------------------------------------------
+
+Diff bw kubectl create & kubectl apply:
+
+apply: used to create or modify resourse in manifest file.
+create: used to create resourse directly at command line.
+
+
+-----------------------------------------------------------------------------------------------------------
+
+diff b/w cloudwatch & cloudTrail:
+
+cloudwatch: it is focus on the health and performance of aws resourse
+it helps collecting & tracking metics log files & setting alarm
+deliver event within 5 min or 1 min.
+
+Cloudtrail:
+service focused on action performed inside aws enviorment
+mainly focused on the user activities inside the account
+delivers an event within 15 min of the api call
+it store bydefault 90 days
+-------------------------------------------------------------------------------------------------------
