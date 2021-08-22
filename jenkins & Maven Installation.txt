@@ -1,0 +1,52 @@
+Jenkines Installation:
+
+step1. wget -O /etc/yum.repos.d/jenkins.repo \
+    https://pkg.jenkins.io/redhat-stable/jenkins.repo
+
+
+setp2. rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key
+
+step3.  yum upgrade
+
+step4. yum install jenkins java-1.8.0-openjdk-devel -y
+
+step5. systemctl start jenkins
+
+step6. Connect to http://<your_server_public_DNS>:8080 
+
+step7. cat /var/lib/jenkins/secrets/initialAdminPassword
+
+-------------------------------------------------------------------------------------------------------
+
+Maven Installation:
+
+wget http://repos.fedorapeople.org/repos/dchen/apache-maven/epel-apache-maven.repo -O /etc/yum.repos.d/epel-apache-maven.repo
+
+sed -i s/\$releasever/6/g /etc/yum.repos.d/epel-apache-maven.repo
+sudo yum install -y apache-maven
+
+mvn –version
+
+-------------------------------------------------------------------------------------------------------
+
+How to create Maven Project:
+
+step1. install maven 
+
+step2. run below command to create the project
+
+mvn archetype:generate -DarchetypeGroupId=org.apache.maven.archetypes -DarchetypeArtifactId=maven-archetype-webapp -DarchetypeVersion=1.4
+
+after creating the project a directory will be created src & pom.xml file.
+
+Maven Commands:
+
+mvn validate
+mvn compile
+mvn test
+mvn package
+mvn install
+mvn clean
+
+---------------------------------------------------------------------------------------------------------
+
