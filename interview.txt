@@ -1,0 +1,34 @@
+docker info ---> to check all info (total running, pause,stop,regstery,swarm)
+docker --version
+docker version
+
+
+Docker images has two type
+1.os based
+2.deamon based
+
+
+to check os release
+cat /etc/os-release
+
+what program we get bydefault in container:
+docker inspect imagename
+
+
+#How to run httpd or any service in docker.
+bydefault there is no systemd in container. & whatever the command or process
+run inside the container the parent process run on host machine.
+so we can not strat or stop the service inside the docker.
+
+
+How to install httpd container:
+
+docker run -d --name web httpd
+docker exec -it web ls
+
+path of index file in httpd:
+/usr/local/apache2/htdoc/index.html
+
+
+docker container cp web2:/usr/local/apache2/htdoc/index.html .
+

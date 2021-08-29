@@ -260,3 +260,107 @@ mainly focused on the user activities inside the account
 delivers an event within 15 min of the api call
 it store bydefault 90 days
 -------------------------------------------------------------------------------------------------------
+what is health probs in kubernetes?
+what is the difference b/w liveness & readyness probe.
+
+How to configure these probes:
+these probes can be configures in three ways
+1.httpget
+2.exec
+3.tcpport
+
+--------------------------------------------------------------------------------------------------------
+
+how to overcome resource utilization in kubernetes.
+
+resources:
+ requests:
+   cpu: "250m"
+   memory: "215Mi" 
+ limits:
+   cpu: "500m"
+   memory: "500Mi"
+
+-------------------------------------------------------------------------------------------------
+
+Ansible Roles:
+
+ansible-galaxy init <ROLE_NAME>
+
+roles-example/
++-- defaults
+¦   +-- main.yml
++-- files
++-- handlers
+¦   +-- main.yml
++-- meta
+¦   +-- main.yml
++-- README.md
++-- tasks
+¦   +-- main.yml
++-- templates
++-- tests
+¦   +-- inventory
+¦   +-- test.yml
++-- vars
+    +-- main.yml
+
+
+Defaults:
+The defaults directory is for defining the variable defaults. 
+The variables in default have the lowest priority thus becoming easy to override. 
+If definition of a variable is nowhere else, the variable in defaults/main.yml will 
+be used.
+
+
+ansible-galaxy init /etc/ansible/apache --offline
+-------------------------------------------------------------------------------------------------------------------------
+
+Ansible ninja2 templete:
+
+ninja2 template is a text file, which content can be replaced with ansible fact and ansible variable.
+the format is .j2 file
+
+note: make sure to use ninja2 template in ansible playbook always use template module.
+
+---
+ - hosts: all
+   tasks:  
+     - name: copy config
+       template: 
+          src: path of jinja2 template
+          dest: info
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+
+system logs:
+
+tail -f /var/logs/secure--->to list last few lines in continouation 
+
+crontab -e
+
+*/3 * * * *-->after evry 3 min
+
+route -n -->to find gatway
+
+systemctl mask
+system unmast
+
+--------------------------------------------------------------------------------------------------------------------------------------------------
+
+what is the diff if we remove the docker images from name & from image ID.
+
+docker system df
+
+docker top dontainerid
+
+ps -ef-->to find PPID
+
+yum install net-tools -->to run networking commnad
+
+note: contaner in bridge network and communcate with host machine & internet.
+
+note: container b/w the diff bridge nw can not communicate with each other.
+
+
+
