@@ -362,5 +362,109 @@ note: contaner in bridge network and communcate with host machine & internet.
 
 note: container b/w the diff bridge nw can not communicate with each other.
 
+----------------------------------------------------------------------------------------------------------------------------
+
+diff blw dedicated host & dedicated instance:
+
+dedicated Instance: only one instance can be host on dedicaed hardware & hypervisor
+
+dedicated host: same as above but we can host multiple instance
+
+---------------------------------------------------------------------------------------------------------------------------------------
+
+EBS Optimization:
+
+increase the bandwith b/w vm & ebs volume as per needed.
+
+---------------------------------------------------------------------------------------------------------------------------------------
+
+After attaching the ebs volume in window or linux vm how to enable it:
+
+In Linux:
+df -h-->to list the partition
+fdisk -l-->list all the hdd
+fdisk diskname-->to create the partition
+mkfs.xfs-->to formate the partition
+mount partiton dirpath-->to mount the disk
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+Diff b/w hibernet & sleep mode:
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+Ho to disable pod schdule on node in kubernetes:
+
+#using the corden command we can disable the pod schduling on pod
+
+----------------------------------------------------------------------------------------------------------------------------------------
+
+How to create kubernetes cluster:
+
+Kubernetes installation with KOPs:
+
+steps:
+1.to store all the session for kubernetes, we need to create s3 bucket & export into variable
+export KOPS_STATE_STORE=s3://bucketname
+2.create an IAM role with with iam,ec2,s3 & route 53 full access
+3.create ec2instance with ability to create/delete/manage ec2|s3|route53|iam 
+4.install kubectl
+5.install kops
+6.create route53 private hosted zone.
+7.expose env variable
+export KOPS_STATE_STORE=s3://bucketname
+8.create ssh-keygen
+9.kops create cluster --cloud=aws --zones=us-east-2b,us-east-2b --name=kishan.dnszone.com --dns-zone=dns.com --dns private --yes
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+
+Kubernetes installation by kubeadm:
+
+1.create ec2
+2.create dns entry in hostfile /etc/hosts
+3.off swap memeory
+swapoff -a
+#also remove fstab enrty
+4.stop firewall 
+5.add reposatory for docker & kubernetes
+
+To install docker:
+
+ sudo yum install -y yum-utils
+ sudo yum-config-manager \
+    --add-repo \
+    https://download.docker.com/linux/centos/docker-ce.repo
+
+After add this repo we can find in repo in /etc/yum.repos.d
+
+Now add kubernets reposatory:
+
+cat <<EOF | sudo tee /etc/yum.repos.d/kubernetes.repo
+[kubernetes]
+name=Kubernetes
+baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-\$basearch
+enabled=1
+gpgcheck=1
+repo_gpgcheck=1
+gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+exclude=kubelet kubeadm kubectl
+EOF
+
+6.sudo setenforce 0
+sudo sed -i 's/^SELINUX=enforcing$/SELINUX=permissive/' /etc/selinux/config
+
+
+7.yum uninstall -y docker-ce kubelet-1.21* kubeadm-1.21* --disableexcludes=kubernetes
+
+8.systemctl start docker kubelet
+9.systemctl enable docker kubelet
+
+10.kubeadm init
+#now copy admin.conf file in user home directory
+
+11.yum install kubectl -y
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
