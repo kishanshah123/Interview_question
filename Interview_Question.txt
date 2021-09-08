@@ -435,6 +435,57 @@ To install docker:
     --add-repo \
     https://download.docker.com/linux/centos/docker-ce.repo
 
+After add this repo we can find in repo in ls /etc/yum.repos.d
+
+Now add kubernets reposatory:
+
+cat <<EOF | sudo tee /etc/yum.repos.d/kubernetes.repo
+[kubernetes]
+name=Kubernetes
+baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-\$basearch
+enabled=1
+gpgcheck=1
+repo_gpgcheck=1
+gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+exclude=kubelet kubeadm kubectl
+EOF
+
+6.sudo setenforce 0
+sudo sed -i 's/^SELINUX=enforcing$/SELINUX=permissive/' /etc/selinux/config
+
+
+7.yum uninstall -y docker-ce kubelet-1.21* kubeadm-1.21* --disableexcludes=kubernetes
+
+8.systemctl start docker kubelet
+9.systemctl enable docker kubelet
+
+10.kubeadm init --ignore-preflight-errors=all
+#now copy admin.conf file in user home directory
+
+11.yum install kubectl -y
+
+12. Install weave network plugin
+kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
+
+Now  How to configure slave nodes:
+
+###############Repeat the steps till 9####################
+
+1.create ec2
+2.create dns entry in hostfile /etc/hosts
+3.off swap memeory
+swapoff -a
+#also remove fstab enrty
+4.stop firewall 
+5.add reposatory for docker & kubernetes
+
+To install docker:
+
+ sudo yum install -y yum-utils
+ sudo yum-config-manager \
+    --add-repo \
+    https://download.docker.com/linux/centos/docker-ce.repo
+
 After add this repo we can find in repo in /etc/yum.repos.d
 
 Now add kubernets reposatory:
@@ -459,12 +510,40 @@ sudo sed -i 's/^SELINUX=enforcing$/SELINUX=permissive/' /etc/selinux/config
 8.systemctl start docker kubelet
 9.systemctl enable docker kubelet
 
-10.kubeadm init
-#now copy admin.conf file in user home directory
-
-11.yum install kubectl -y
-
+Now run kubectl join command to join the node into cluster.
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+###what is kubernetes api-resourse###
+it is nothing but kubernetes object like pod, deployment, services etc
+
+kubectl api-resourse-->to list all the objects in kubernetes
+
+#kubectl get nodes
+#kubectl describe nodes
+#kubectl label node node1 env=dev
+#kubectl edit node node1
+#kubectl cordon node1
+#kubectl uncordon node1
+
+
+9810653364
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Docker Compose:
+
+#It is a service, by which we can create,delete,manage multiple container by single command.
+#it provide the isolation env for the container
+#it create the seprate network(bridge) for container.
+
+
+
+
+ 
+
+
+
+
+
 
 
