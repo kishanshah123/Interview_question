@@ -460,12 +460,24 @@ sudo sed -i 's/^SELINUX=enforcing$/SELINUX=permissive/' /etc/selinux/config
 9.systemctl enable docker kubelet
 
 10.kubeadm init --ignore-preflight-errors=all
+
+or 
+kubeadm  init --pod-network-cidr=192.168.0.0/16
+
 #now copy admin.conf file in user home directory
+
+mkdir -p $HOME/.kube
+cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+chown $(id -u):$(id -g) $HOME/.kube/config
+
 
 11.yum install kubectl -y
 
 12. Install weave network plugin
 kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 
 Now  How to configure slave nodes:
 
@@ -512,6 +524,17 @@ sudo sed -i 's/^SELINUX=enforcing$/SELINUX=permissive/' /etc/selinux/config
 
 Now run kubectl join command to join the node into cluster.
 
+
+Note: if we want to remove the node from cluster then 
+1. drain the node
+kubectl drain node1
+2. delete the node
+kubectl delete node node1
+
+if we want to undrain the node then 
+kubectl uncordon node1
+
+
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ###what is kubernetes api-resourse###
@@ -525,9 +548,16 @@ kubectl api-resourse-->to list all the objects in kubernetes
 #kubectl edit node node1
 #kubectl cordon node1
 #kubectl uncordon node1
+kubectl run podname --image=nginx
+
+kubectl apply -f ymlfie
+
+kubectl scale --replicas=5 rc/myrc -n grras
+
+kubectl edit rc/myrc -n grras
 
 
-9810653364
+
 ------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Docker Compose:
@@ -535,6 +565,33 @@ Docker Compose:
 #It is a service, by which we can create,delete,manage multiple container by single command.
 #it provide the isolation env for the container
 #it create the seprate network(bridge) for container.
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+#Node command
+
+kubeadm token list
+kubeadm token --print-join-command
+
+
+
+#Pod command
+
+kubectl get pod -o wide
+kubectl logs containername 
+
+kubectl exec -it containername -- bash
+kubectl get pod --show-label
+
+
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
 
 
 
