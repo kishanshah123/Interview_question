@@ -1,0 +1,175 @@
+Static Pod:
+
+it is not managed by kubernetes master node it is manage by kubelet at the worker node.
+if we want to create or delete the static pod we have to create the yaml file in a specific location 
+on the worker node. we can not manage create, delete, update the static pod by master node.
+
+-------------------------------------------------------------------------------------------------------------
+
+Node Affinity:
+
+It is nothing but enhance version of node selector.
+here instad of using lables we can use multiple condition to 
+schdule the pod on worker node.
+
+Node affinity is used for pod allocation on worker node.
+Node Anti-affinity is use not to schedule pod on node.
+
+For example:
+
+for simple nodeselector pod  definition:
+
+container:
+ - name: nginx
+   image: nginx
+nodeselector:
+   disktype: ssd
+
+container:
+ - name: nginx
+   image: nginx
+affinity:
+ nodeAffinity:
+  requiredDuringSchdulingIgnoredDuringExecution:
+   nodeSelectorTerms:
+    - matchExpressions:
+      - key: disktype
+        operator: In
+        value:
+         - ssd
+
+--------------------------------------------------------------------------------
+
+Pod self healing policy:
+
+evenif we dont mention the selfhealing policy in pod bydefault it has restart policy.
+self healing policy means restart policy.
+
+type of policy:
+always
+onfailure
+never
+
+
+----------------------------------------------------------------------------------
+
+Service discovery:
+
+whenever we create service/pod in cluster it attached with DNS name.
+so other object want to communicate with these service we can use its name.
+but if they belong to differnet name space they have use fully qualifies DNS name.
+
+
+-----------------------------------------------------------------------------------
+DNS in kubernetes:
+
+whenever we create any object in kubernetes in kubernetes it gets the DNS.
+
+DNS runs as a service in kube-system namespace.
+
+--------------------------------------------------------------------------------------
+
+Network Policy:
+
+k8 network policy are used to control the traffic flow at ip address or port level.
+
+network policy is object in kubernetes
+
+type of netwrk policy
+other pods that are allowd
+namespace that are allowed
+ipblock(ip range)
+
+
+Network policy allows to build secure network keeping pods isolated from traffic they do not need.
+byfault pods are not isolated
+
+we can isolate the pod by applying network policy
+
+network policy component
+1.podSelector
+
+eg.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: sample-net-policy
+  namespace: default
+spec:
+ podSelector:
+  matchLabels:
+   role: front-end
+
+Network policy apply on ingress , egress & both
+...
+ingress:
+ - from:
+   - podSelector:
+      matchLabels:
+       role: client
+2.namespaceSelector
+...
+ingress:
+ - from:
+   - namespaceSelector:
+      matchLabels:
+      role: client
+
+3.ipBlock
+
+...
+ingress:
+ - from:
+   - ipBlock:
+      cidr: 172.17.0.0/16
+
+Ports In network Policy:
+
+...
+ingress
+ - from:
+   ports:
+   - protocol: TCP
+     port: 80
+
+...
+
+----------------------------------------------------------------------------
+
+Kubernetes monitoring with promethues & grafance
+
+----------------------------------------------------------------------------
+
+Container logs:
+
+kubectl logs podname containername
+
+We can get the logs for k8-service on each node using journalctl
+
+sudo journelctl -u kubectl
+
+sudo journelctl -u docker
+
+kubernetes cluster component have log to 
+
+/var/log/kube-apiserver.log
+/var/log/kube-scheduler.log
+/var/log/kube-controller-manager.log
+
+kubeadm logs are not generated at /var/log because many component run in container
+
+-----------------------------------------------------------------------------------------------
+
+kubectl run podname --image=nginx
+
+kubectl apply -f ymlfie
+
+kubectl scale --replicas=5 rc/myrc -n grras
+
+kubectl edit rc/myrc -n grras
+kubectl create ns myns --dry-run=client -o yaml
+
+kubectl create ns myns --dry-run=client -o yaml > ns.yaml
+
+
+
