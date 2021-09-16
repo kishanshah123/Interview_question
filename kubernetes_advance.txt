@@ -171,5 +171,135 @@ kubectl create ns myns --dry-run=client -o yaml
 
 kubectl create ns myns --dry-run=client -o yaml > ns.yaml
 
+###replicas set working with set & equality based selecotor######
+###replica set work only with equality based selector#####
 
+Replica set:
+
+replica:4
+selector
+  matchExpression:
+    key:app operator:in value:[prod1,prod2]
+pod template:
+  label:
+    app: prod2
+   container:
+     -name:
+example:
+
+spec:
+  replicas:4
+  selector:
+    matchExpressions:
+      - [key:app, operator:In, values:[prod1,prod2]]
+  template:
+    metadata:
+      labels:
+        app:prod2
+    spec:
+      containers:
+        name: nginx
+        image: nginx
+        port:
+          containerPort: 80
+
+######deployment##################
+
+
+
+spec:
+  replicas:4
+  selector:
+    matchLabels:
+      app: prod
+  template:
+    metadata:
+      labels:
+        app:prod
+    spec:
+      containers:
+        name: nginx
+        image: nginx
+        port:
+          containerPort: 80
+
+
+
+#command to update the image
+kubectl set image deployment/name nginx=nginx:1.20 -n grras --record
+
+#to check the update status
+kubectl rollout status deploy/name -n grras
+
+#to check rollout histroy
+kubectl rollout history deploy/name -n grras
+
+#to rollout undo the deployment
+kubectl rollout undo --to-revision=1 deploy/name -n grras
+
+-------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Daemon set:
+
+we if want to deploy pod on each node then we create deamon set for it.
+its deply pod on each node.
+byfault master node is taint, no pod will be schdule on it. so deamonset will deploy the pod 
+on worker nodes.
+
+--------------------------------------------------------------------------------------------------------------------------------------------------
+
+static pod:
+
+if we want to deply the pod but we dont want to manage this my kubernetes. so we can create static pod.
+this pod is not managed my kubernetes, it is created by kubelets of node.
+
+to create static pod, we have to create a yml file at perticular place in the node.
+
+
+--------------------------------------------------------------------------------------------------------
+
+How to control pod schduling:
+
+
+If we want to schdule the node on specific node, there are two way to schdule the pod on perticular node.
+
+1.nodeName:in this we have to mention the node
+2.nodeSelector: in this we have to mention the tag
+
+example:
+apiVersion: v1
+kind Pod
+metadata:
+  name: web1
+  namespace: grras
+spec:
+  nodeName: node1
+  container:
+    - image: nginx
+      name: con1
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flip
+  namespace: grras
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: prod
+  template:
+    metadata:
+      labels:
+        app: prod
+    spec:
+      nodeName: node1
+      containers:
+        - name: nginx
+          image: nginx
+          
+
+note: make sure its priority is high as compair cordon
+note: if node selector/nodename dont found any node it will go in pending state
 
