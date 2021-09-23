@@ -171,5 +171,456 @@ kubectl create ns myns --dry-run=client -o yaml
 
 kubectl create ns myns --dry-run=client -o yaml > ns.yaml
 
+###replicas set working with set & equality based selecotor######
+###replica set work only with equality based selector#####
+
+Replica set:
+
+replica:4
+selector
+  matchExpression:
+    key:app operator:in value:[prod1,prod2]
+pod template:
+  label:
+    app: prod2
+   container:
+     -name:
+example:
+
+spec:
+  replicas:4
+  selector:
+    matchExpressions:
+      - [key:app, operator:In, values:[prod1,prod2]]
+  template:
+    metadata:
+      labels:
+        app:prod2
+    spec:
+      containers:
+        name: nginx
+        image: nginx
+        port:
+          containerPort: 80
+
+######deployment##################
+
+
+
+spec:
+  replicas:4
+  selector:
+    matchLabels:
+      app: prod
+  template:
+    metadata:
+      labels:
+        app:prod
+    spec:
+      containers:
+        name: nginx
+        image: nginx
+        port:
+          containerPort: 80
+
+
+
+#command to update the image
+kubectl set image deployment/name nginx=nginx:1.20 -n grras --record
+
+#to check the update status
+kubectl rollout status deploy/name -n grras
+
+#to check rollout histroy
+kubectl rollout history deploy/name -n grras
+
+#to rollout undo the deployment
+kubectl rollout undo --to-revision=1 deploy/name -n grras
+
+-------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Daemon set:
+
+we if want to deploy pod on each node then we create deamon set for it.
+its deply pod on each node.
+byfault master node is taint, no pod will be schdule on it. so deamonset will deploy the pod 
+on worker nodes.
+
+--------------------------------------------------------------------------------------------------------------------------------------------------
+
+static pod:
+
+if we want to deply the pod but we dont want to manage this my kubernetes. so we can create static pod.
+this pod is not managed my kubernetes, it is created by kubelets of node.
+
+to create static pod, we have to create a yml file at perticular place in the node.
+
+
+--------------------------------------------------------------------------------------------------------
+
+How to control pod schduling:
+
+
+If we want to schdule the node on specific node, there are two way to schdule the pod on perticular node.
+
+1.nodeName:in this we have to mention the node
+2.nodeSelector: in this we have to mention the tag
+
+example:
+apiVersion: v1
+kind Pod
+metadata:
+  name: web1
+  namespace: grras
+spec:
+  nodeName: node1
+  container:
+    - image: nginx
+      name: con1
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flip
+  namespace: grras
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: prod
+  template:
+    metadata:
+      labels:
+        app: prod
+    spec:
+      nodeName: node1
+      containers:
+        - name: nginx
+          image: nginx
+
+kubectl cordon nodename
+
+after cordon the node new pod schduling will be dissabled. but existing pod will be running as it is.
+
+note: if node is cordon and still we create pod using selector, or nodename still pod will be created.
+
+kubectl uncordon nodename
+
+
+#kubectl drain:
+
+drain means if we drain a node means it will delete all the pod & will schdule it on another node also disable further pod schdulling 
+
+note:
+it will delete the pod managed by replicaset, replication controller,deployment but simple pod & deamon set will pod will be delete.
+ 
+kubectl drain nodename
+
+to delete simple pod:
+kubectl drain nodename --force
+
+daemonset will be terminated only we can do it ignor:
+kubectl drain nodename --ignor-daemonsets
+
+now if want to start schdulling again:
+kubectl uncordon nodename
+
+
+#kubernetes taint:
+
+taint: is similar to cordon it is also used to stop schdulling the pod on nodes. 
+
+to define taint can define as below:
+
+taint:
+  key: any value
+  value: any value
+  effect: noschdeule, prefer noschedule, no execute
+
+noschdeule: it means no more pod will be schdeule further, existing pod will be running. if we want to ignor this taint we have to define toleration in pod defination.
+
+preferschdule: pod is only be schdule if no ther option is available.
+
+no execute: similar to drain
+
+
+          
+
+note: make sure its priority is high as compair cordon
+note: if node selector/nodename dont found any node it will go in pending state
+
+-------------------------------------------------------------------------------------------------------------------------------------
+
+Kubernetes configmap & secret:
+configmap: It is used to store non confidential data. we can store key value paire, we can store file.
+
+kubectl create configmap web --from-literal=user=test --from-file=index.html -n grras
+kubectl get cm -n grras
+kubectl describe cm -n grras
+
+#we can pass the config map & secret in container by env & volume.
+
+example:
+let suppose we have a confign map which store db passwd  & we want to pass this passwd in myqsl pod then we can pass this 
+value by envoirnment variable and inside env we  can call config map.
+
+spec:
+  containers:
+    - name: con
+      image: mysql
+      env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              name: db
+
+
+from volume:
+
+
+spec:
+  containers:
+    - name: con
+      image: mysql
+      volumeMounts:
+        - name: test
+          mountPath: /usr/share/nginx/html/
+  volume:
+     - name: test
+       configMap:
+         name: web
+         items:
+           - key: index.html
+             path: index.html
+
+
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: web1
+  namespace: grras
+spec:
+  containers:
+    - image: nginx
+      name: con1
+      volumeMounts:
+        - name: test
+          mountPath: /usr/share/nginx/html/
+  volumes:
+     - name: test
+       configMap:
+         name: web
+         items:
+           - key: index.html
+             path: index.html
+
+
+      env:
+        - name: PLAYER_INITIAL_LIVES 
+          valueFrom:
+            configMapKeyRef:
+              name: db           
+              key: player_initial_lives 
+
+
+Secret:
+
+it is used to confidential file in pod.
+
+create secret from file:
+create file- user.txt, passwd.txt
+
+kubectl create secret generic name --from-file=user.txt --from-file=passwd.txt
+
+kubectl get secrets
+
+#note: secret encrypt the data in two ways 1. using base64 2.tls
+
+#there are two ways to create secret 1. by command 2. by yaml if we create the secret by command no need to encrypt the data
+but if we create by yaml we have encrypt the data by base 64.
+
+kubectl create secret genric name --from-literal=user=hope --from-literl=token=sdgfsgdf --from-file=index.html -n grras
+
+echo admin | base64
+echo password | base64
+
+cat index.html | base64 -wo-->to incrypt filedata
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+Kubernetes Quotas:
+note: quota is enforce on namespace level not on kubernetes-resource level.
+
+type:
+resourse quota: means we can limit no. of resourses can be created inside namespaces
+example:
+pod=50
+deployment=4
+deamonset=10
+service=5
+
+
+compute quota: means we can limit hardware resourse utilization for namespace
+example:
+ram:10gb
+cpu:1000M
+
+kubectl get quota
+
+apiVesrion: v1
+kind: ResourceQuots
+metadata:
+  name: quota1
+spec:
+  hard:
+    requests.cpu: 100m
+    requests.memory: 1G
+    limitd.cpu: 200m
+    configmaps: 10
+    pods: 4
+    secrets: 10
+
+
+
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: web1
+  namespace: grras
+spec:
+  containers:
+   - name: hello-world
+     image: nginx
+     resources:
+       requests:
+         memory:
+         cpu:
+       limits:
+         memory:
+         cpu:
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+Kubernetes Volume:
+
+#Persistent volume (PV): means its a cluster level volume, we can create pv with the help of nfs, ebs etc.
+
+#persistent volume claim (PVC): if we want to claim the PV we use PVC.
+
+#How PVC get claim from PV:
+
+while creating the PVC we dont need to mention the PV name, we only have to mention storage class.
+
+
+Note: persistent volume is created with the help of storage class, there are many type of storage class is there like slow, fast etc.
+bydefault there is slow type storage class is there in the cluster.
+
+#Note: if PVC size is 5GB so it doen not mean ke sirf 5GB is use krr sakta h PV me se, jarurat hone prr ye exceed bhe krr skta h.
+
+#Note: One PV can be attache to one PVC only.
+
+#note: at the time of PV creation we can define the PVC reference that only this PVC can claimed to this PV.
+
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: grraspv
+spec:
+  capacity:
+    storage: 5Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Recycle
+  storageClassName: slow
+  mountOptions:
+    - hard
+    - nfsvers=4.1
+  nfs:
+    path: /tmp
+    server: 172.17.0.2
+  claimRef:
+    namespace: grras
+    name: grraspvc
+
+
+
+#Access mode:
+
+The access modes are:
+
+ReadWriteOnce -- the volume can be mounted as read-write by a single node
+ReadOnlyMany -- the volume can be mounted read-only by many nodes
+ReadWriteMany -- the volume can be mounted as read-write by many nodes
+ReadWriteOncePod -- the volume can be mounted as read-write by a single Pod. This is only supported for CSI volumes and Kubernetes version 1.22+.
+
+
+#how to configure nfs file share
+create a server
+yum install -y nfs-utils
+mkdir /kube
+create entry in /etc/exports
+/kube *(rw,sync,no_root_squash)
+exportfs -rv
+
+systemctl start nfs-server
+
+now go to master node, create a dir /data
+
+now mount this dir with shareed file system
+
+mount ip:/kube /data
+
+df -h 
+
+
+#PVC yml file
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: grraspvc
+  namespace: grras
+spec:
+  accessModes:
+    - ReadWriteMany
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: slow
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flip
+  namespace: grras
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: prod
+  template:
+    metadata:
+      labels:
+        app: prod
+    spec:
+      volumes:
+        - name: myvol
+          persistentVolumeClaim:
+            claimName: grraspvc
+      containers:
+        - name: nginx
+          image: nginx
+
+whenever we run kubectl command it goes & check the config file in its home dir.
+config file container all the key, certicate, cluster info etc. to get login into the cluster.
 
 
