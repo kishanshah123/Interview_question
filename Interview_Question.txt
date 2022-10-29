@@ -289,19 +289,19 @@ ansible-galaxy init <ROLE_NAME>
 
 roles-example/
 +-- defaults
-¦   +-- main.yml
+Â¦   +-- main.yml
 +-- files
 +-- handlers
-¦   +-- main.yml
+Â¦   +-- main.yml
 +-- meta
-¦   +-- main.yml
+Â¦   +-- main.yml
 +-- README.md
 +-- tasks
-¦   +-- main.yml
+Â¦   +-- main.yml
 +-- templates
 +-- tests
-¦   +-- inventory
-¦   +-- test.yml
+Â¦   +-- inventory
+Â¦   +-- test.yml
 +-- vars
     +-- main.yml
 
@@ -584,23 +584,8 @@ kubectl logs containername
 kubectl exec -it containername -- bash
 kubectl get pod --show-label
 
-
-
-
 ---------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-
-
-
-
-
-
- 
-
-
-
-
-
-
-
+Log Files:
+/var/log/lastlog â€“ It stores user last login info.
+/var/log/messages â€“ It has all the global system messages.
+/var/log/wtmp â€“ It keeps a history of login and logout information.
