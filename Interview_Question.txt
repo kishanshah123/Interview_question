@@ -1,3 +1,13 @@
+Terraform null_resourse:
+The Terraform null_resourceis commonly used to run scripts on a specified trigger.
+The triggerdefined in your null_resourceblock defines when the script you have specified is executed. For example:
+The null_resourcetrigger can be set to run only if a resource exists:
+id = resource.id
+
+Or to run every time Terraform executes a run:
+timestamp = timestamp()
+
+
 Git:
 
 1.what is git conflict & how to resolve it.
