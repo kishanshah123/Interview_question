@@ -1,3 +1,8 @@
+VPC endpoint:
+if we want to establish a private connection b/w two resource we aws backbone network we use vpc endpoint.
+type:
+1.gateway: works with all subnets
+2.interface: work with selected subntes & while using cli we have to pass endpoint url
 
 liveness & readyness:
 liveness: check whether is container is running or not, if not restart the container
