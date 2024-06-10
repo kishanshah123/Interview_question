@@ -1,3 +1,6 @@
+To enable object lock first need to eanble versioning
+To create read replica first need to enable backup
+
 VPC endpoint:
 if we want to establish a private connection b/w two resource we aws backbone network we use vpc endpoint.
 type:
